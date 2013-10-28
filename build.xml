@@ -1,0 +1,25 @@
+<project name="BeerController" default="dist" basedir=".">
+ 
+	<property name="projectName" location="BeerController"/>
+	<property name="bin" location="bin"/>
+ 
+	<target name="dist">
+    	<jar jarfile="${projectName}.jar" basedir="${bin}">
+			<manifest>
+		    	<attribute name="Main-Class" value="raspberry.controller.Controller"/>
+		    </manifest>
+    	</jar>
+	</target>
+ 
+	<target name="deploy" depends="dist">
+		<scp file="${projectName}.jar" todir="pi@192.168.1.58:" password="raspberry"/>
+	</target>
+
+	<target name="run" depends="deploy">
+		<sshexec host="192.168.1.58"
+			username="pi"
+			password="raspberry"
+			usepty="true"
+			command="sudo /home/pi/java/jdk1.8.0/bin/java -jar BeerController.jar"/>
+	</target>
+</project>

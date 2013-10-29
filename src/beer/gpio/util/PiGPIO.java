@@ -1,4 +1,4 @@
-package raspberry.util;
+package beer.gpio.util;
 
 public enum PiGPIO {
 	OUT	("out"),

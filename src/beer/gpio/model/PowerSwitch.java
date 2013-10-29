@@ -1,11 +1,11 @@
-package raspberry.model;
+package beer.gpio.model;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import raspberry.util.PiGPIO;
-import raspberry.util.PowerState;
+import beer.gpio.util.PiGPIO;
+import beer.gpio.util.PowerState;
 
 public class PowerSwitch {
 	
@@ -14,6 +14,8 @@ public class PowerSwitch {
 	private final String PS_CHANNEL_COMMAND_FILE;
 	
 	private final PiGPIO POWERSWITCH_CHANNEL;
+	
+	private PowerState currentState = PowerState.UNKNOWN;
 
 	public PowerSwitch(PiGPIO powerSwitchChannel) {
 		PS_CHANNEL_BASEDIR 			= PiGPIO.BASE_DIR + "/gpio" + powerSwitchChannel;
@@ -68,7 +70,8 @@ public class PowerSwitch {
 				try (FileWriter writer = new FileWriter(PS_CHANNEL_COMMAND_FILE)) {
 					writer.write(PiGPIO.ON.getValue());
 					writer.flush();
-					System.out.println("Set PowerSwitch to ON.");
+					System.out.println("Set PowerSwitch to ON."); 
+					currentState = PowerState.ON;
 				}
 				break;
 			case OFF:
@@ -76,6 +79,7 @@ public class PowerSwitch {
 					writer.write(PiGPIO.OFF.getValue());
 					writer.flush();
 					System.out.println("Set PowerSwitch to OFF.");
+					currentState = PowerState.OFF;
 				}
 				break;
 			default:
@@ -84,5 +88,9 @@ public class PowerSwitch {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public PowerState getState() {
+		return currentState;
 	}
 }

@@ -16,9 +16,9 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<!-- <mainClass>beer.rest.server.BeerServerComponent</mainClass>  -->
-							<!-- <mainClass>beer.gpio.controller.BeerController</mainClass> -->
-							<mainClass>beer.rest.server.BeerServerComponent</mainClass>
+							<!-- <mainClass>beer.rest.server.BeerServerComponent</mainClass> -->
+							<mainClass>beer.gpio.controller.BeerController</mainClass>
+							<!-- <mainClass>beer.rest.server.BeerServerComponent</mainClass> -->
 						</manifest>
 					</archive>
 				</configuration>
@@ -33,10 +33,24 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
+		
+
 		<dependency>
 			<groupId>org.restlet.jse</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>2.1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -1,90 +1,48 @@
 package beer.gpio.controller;
 
-import java.io.FileReader;
-import java.io.IOException;
+import beer.gpio.device.BasePin.PinState;
+import beer.gpio.device.PowerSwitch;
+import beer.gpio.device.TemperatureSensor;
+import beer.gpio.device.TemperatureSensorException;
 
-import beer.gpio.model.PowerSwitch;
-import beer.gpio.model.TemperatureSensor;
-import beer.gpio.model.TemperatureSensorException;
-import beer.gpio.util.PiGPIO;
-import beer.gpio.util.PowerState;
-
-public class BeerController {
+public class BeerController extends Thread {
 	
-	private int sleepInterval;
-	
+	private int sleepInterval = 60000;	
 	private float baseTemperature = 18;
 	private float tolerance = 0.5f;
 	
 	private PowerSwitch powerSwitch;
 	private TemperatureSensor tempSensor;
-	
-	private final String BUS_BASE_DIR 	= "/sys/bus/w1/devices";
-	private final String TEMP_DEVICE_DIR 	= BUS_BASE_DIR + "/28-000004e55923";
-	private final String TEMP_DEVICE_FILE 	= TEMP_DEVICE_DIR + "/w1_slave";
-	
-	private static BeerController world;
-	
-	private BeerController() {
-		// singleton
-	}
-	
-	public static BeerController getInstance() {
-		if (world == null) {
-			world = new BeerController();
-		} 
-		return world;
-	}
 
 	public static void main(String[] args) {
-		getInstance().start();
+		new BeerController().start();
 	}
 
-	public void start() {
-		setDefaults();
-		
-		powerSwitch = new PowerSwitch(PiGPIO.PIN_7);
-		powerSwitch.setup();
-		
+	@Override
+	public void run() {
+		try {
+			powerSwitch = new PowerSwitch();
+		} catch (TemperatureSensorException ex) {
+			ex.printStackTrace();
+			System.exit(0);
+		}
 		tempSensor = new TemperatureSensor();
 		
-		while (true) { // TODO should run in separate thread!
+		while (true) { 
 			try {
-				try (FileReader fr = new FileReader(TEMP_DEVICE_FILE)) { 
-					/* TODO: catch FileNotFoundException. If this happens,
-					 * then try and reload the kernel modules (ie, reset the temperature sensor).
-					 * Send a txt message the mobile app that an issue has occurred.
-					 * If reloading kernel modules still fails, then... 
-					 * Turn off the PowerSwitch!!! 
-					 * --> java.io.FileNotFoundException: /sys/bus/w1/devices/28-000004e55923/w1_slave (No such file or directory)
-					 */
-					Float temp = tempSensor.readTemperature(fr);
-					
-					if (tooLow(temp)) {
-						powerSwitch.applyState(PowerState.ON);
-					} else if (tooHigh(temp)) {
-						powerSwitch.applyState(PowerState.OFF);
-					}
-				} catch(IOException ex) {
-					ex.printStackTrace();
-				}
-			} catch (TemperatureSensorException ex) {
-				System.out.println(ex.getMessage());
-			}
+				Float temp = tempSensor.readTemperature();
 			
+				if (tooLow(temp)) {
+					powerSwitch.setValue(PinState.ON);
+				} else if (tooHigh(temp)) {
+					powerSwitch.setValue(PinState.OFF);
+				}			
+			} catch (TemperatureSensorException e) {
+				e.printStackTrace();
+				System.exit(0);
+			}
 			pause(sleepInterval);
 		}
-	}
-	
-	public void stop() {
-		System.exit(0);
-	}
-	
-	private void setDefaults() {
-		// set some defaults
-		sleepInterval = 60000;
-		baseTemperature = 18;
-		tolerance = 0.5f;
 	}
 	
 	private boolean tooLow(Float temp) {
@@ -103,6 +61,7 @@ public class BeerController {
 		}
 	}
 	
+	// Getters and Setters
 	public PowerSwitch getPowerSwitch() {
 		return powerSwitch;
 	}

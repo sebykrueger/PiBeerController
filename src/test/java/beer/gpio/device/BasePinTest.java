@@ -24,7 +24,7 @@ public class BasePinTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test(expected=TemperatureSensorException.class)
-	public void testConstructorException() throws TemperatureSensorException {
+	public void testConstructorException_FileNotFound() throws TemperatureSensorException {
 		new BasePinForUnitTest(pin, Direction.OUT);
 	}
 
@@ -41,11 +41,11 @@ public class BasePinTest {
 		File directionFile = new File(gpioDir1.getAbsolutePath() + "/direction");
 		directionFile.createNewFile();
 		
-		new BasePinForUnitTest(pin, Direction.OUT);
-		
 		assertThat(new File(gpioDir.getAbsolutePath() + "/unexport").exists(), is(true));
 		assertThat(new File(gpioDir.getAbsolutePath() + "/export").exists(), is(true));
 		assertThat(new File(gpioDir1.getAbsolutePath() + "/direction").exists(), is(true));
+		
+		new BasePinForUnitTest(pin, Direction.OUT);
 		
 		String direction = FileUtils.readFileToString(directionFile);
 		String export = FileUtils.readFileToString(exportFile);

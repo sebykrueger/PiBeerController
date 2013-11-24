@@ -9,6 +9,6 @@ public class EternalActionsServerResource extends ServerResource{
 
 	@Get
 	public void shutdown() {
-		BeerController.getInstance().stop();
+		BeerController.getInstance().shutdown();
 	}
 }

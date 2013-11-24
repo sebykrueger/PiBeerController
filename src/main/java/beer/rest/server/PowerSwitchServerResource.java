@@ -9,6 +9,6 @@ public class PowerSwitchServerResource extends ServerResource {
 
 	@Get ("txt")
 	public String getState() {
-		return BeerController.getInstance().getPowerSwitch().getState().name();
+		return BeerController.getInstance().getPowerSwitch().getPinState().name();
 	}
 }

@@ -10,7 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import beer.gpio.device.BasePin.PinState;
+import beer.gpio.device.PowerSwitch.State;
+import beer.gpio.exception.PowerSwitchException;
 import beer.gpio.util.FilePaths;
 
 public class PowerSwitchTest {
@@ -19,7 +20,7 @@ public class PowerSwitchTest {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
 	@Test
-	public void testPowerSwitch() throws IOException, TemperatureSensorException {
+	public void testPowerSwitch() throws IOException, PowerSwitchException {
 		// setup
 		File gpioDir = tempFolder.newFolder("gpio");
 		File unexportFile = new File(gpioDir.getAbsolutePath() + "/unexport");
@@ -35,24 +36,24 @@ public class PowerSwitchTest {
 		
 		// test
 		PowerSwitch powerSwitch = new PowerSwitchForUnitTest();
-		assertEquals(PinState.UNKNOWN, powerSwitch.getPinState());		
+		assertEquals(State.UNKNOWN, powerSwitch.getPinState());		
 		String value = FileUtils.readFileToString(valueFile);
 		assertEquals("", value);
 		
-		powerSwitch.setValue(PinState.ON);
-		assertEquals(PinState.ON, powerSwitch.getPinState());
+		powerSwitch.setValue(State.ON);
+		assertEquals(State.ON, powerSwitch.getPinState());
 		value = FileUtils.readFileToString(valueFile);
 		assertEquals("1", value);
 		
-		powerSwitch.setValue(PinState.OFF);
-		assertEquals(PinState.OFF, powerSwitch.getPinState());
+		powerSwitch.setValue(State.OFF);
+		assertEquals(State.OFF, powerSwitch.getPinState());
 		value = FileUtils.readFileToString(valueFile);
 		assertEquals("0", value);
 	}
 	
 	private class PowerSwitchForUnitTest extends PowerSwitch  {
 
-		public PowerSwitchForUnitTest() throws TemperatureSensorException {
+		public PowerSwitchForUnitTest() throws PowerSwitchException {
 			super();
 		}
 

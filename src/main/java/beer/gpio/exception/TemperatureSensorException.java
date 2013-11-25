@@ -1,10 +1,10 @@
-package beer.gpio.device;
+package beer.gpio.exception;
 
 public class TemperatureSensorException extends Exception {
+	
+	private static final long serialVersionUID = -6264155918363945522L;
 
-	private static final long serialVersionUID = 7670098575620550128L;
-	
-	
+
 	public TemperatureSensorException(String message, Throwable cause) {
 		super(message, cause);
 	}

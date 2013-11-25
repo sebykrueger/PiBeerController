@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.logging.Logger;
 
+import beer.gpio.exception.TemperatureSensorException;
 import beer.gpio.util.FilePaths;
 
 public class TemperatureSensor {

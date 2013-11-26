@@ -13,7 +13,7 @@ public class BeerController implements Runnable {
 	private int sleepInterval = 60000;	
 	private float baseTemperature = 18;
 	private float tolerance = 0.5f;
-	private int MAX_RETRIES = 10;
+	private int maxRetries = 10;
 	
 	private boolean running = true;
 	
@@ -37,7 +37,7 @@ public class BeerController implements Runnable {
 	public void run() {
 		instance = this;
 		
-		int retries = 0;
+		int retries = 1;
 		while (running) { 
 			try {
 				Float temp = tempSensor.readTemperature();
@@ -52,10 +52,10 @@ public class BeerController implements Runnable {
 			} catch (TemperatureSensorException ex) {
 				ex.printStackTrace();
 				attemptPowerSwitchOff();
-				if (++retries > MAX_RETRIES) {
+				if (++retries > maxRetries) {
 					shutdown();
 				} else {
-					log.severe("Try " + retries + " of " + MAX_RETRIES);
+					log.severe("Try " + retries + " of " + maxRetries);
 				}
 			} catch (PowerSwitchException ex) {
 				ex.printStackTrace();
@@ -126,5 +126,13 @@ public class BeerController implements Runnable {
 
 	public void setTolerance(float tolerance) {
 		this.tolerance = tolerance;
+	}
+	
+	public int getMaxRetries() {
+		return maxRetries;
+	}
+	
+	public void setMaxRetries(int maxRetries) {
+		this.maxRetries = maxRetries;
 	}
 }

@@ -3,11 +3,8 @@ package beer.rest.server;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
 
-import beer.gpio.controller.BeerController;
-
-public class BeerControllerServerResource extends ServerResource {
+public class BeerControllerServerResource extends AbstractServerResource {
 	
 	/**
 	 * one of:
@@ -26,13 +23,13 @@ public class BeerControllerServerResource extends ServerResource {
 	public String representation() {
 		switch (attribute) {
 		case "sleepinterval":
-			return getSleepInterval();
+			return getConfig().getSleepInterval().toString();
 			
 		case "basetemp":
-			return getBaseTemperature();
+			return getConfig().getBaseTemperature().toString();
 			
 		case "tolerance":
-			return getTolerance();
+			return getConfig().getTolerance().toString();
 
 		default:
 			throw new RuntimeException();
@@ -43,40 +40,17 @@ public class BeerControllerServerResource extends ServerResource {
 	public void store(String value) {
 		switch (attribute) {
 		case "sleepinterval":
-			setSleepInterval(value);
+			getConfig().setSleepInterval(Integer.parseInt(value));
 			
 		case "basetemp":
-			setBaseTemperature(value);
+			getConfig().setBaseTemperature(Float.parseFloat(value));
 			
 		case "tolerance":
-			setTolerance(value);
+			getConfig().setTolerance(Float.parseFloat(value));
 
 		default:
 			throw new RuntimeException();
 		}
 	}
 	
-	private String getSleepInterval() {
-		return BeerController.getInstance().getSleepInterval() + "";
-	}
-
-	private void setSleepInterval(String sleepInterval) {
-		BeerController.getInstance().setSleepInterval(Integer.parseInt(sleepInterval));
-	}
-
-	private String getBaseTemperature() {
-		return BeerController.getInstance().getBaseTemperature() + "";
-	}
-
-	private void setBaseTemperature(String baseTemperature) {
-		BeerController.getInstance().setBaseTemperature(Float.parseFloat(baseTemperature));
-	}
-
-	private String getTolerance() {
-		return BeerController.getInstance().getTolerance() + "";
-	}
-
-	private void setTolerance(String tolerance) { 
-		BeerController.getInstance().setTolerance(Float.parseFloat(tolerance));
-	}
 }

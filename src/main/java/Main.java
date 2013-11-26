@@ -1,6 +1,7 @@
 import java.util.logging.Logger;
 
 import beer.gpio.controller.BeerController;
+import beer.gpio.controller.Configuration;
 import beer.gpio.device.PowerSwitch;
 import beer.gpio.device.TemperatureSensor;
 import beer.rest.server.BeerServerComponent;
@@ -32,12 +33,13 @@ public class Main {
 			System.exit(0);
 		}
 		
-		BeerController beerController = new BeerController(powerSwitch, tempSensor);
+		final Configuration config = new Configuration();
+		final BeerController beerController = new BeerController(powerSwitch, tempSensor, config);
 		new Thread(beerController).start();
 		
 		
 		log.info("BeerController starting REST Server...");
-		new BeerServerComponent().start();
+		new BeerServerComponent(powerSwitch, tempSensor, beerController, config).start();
 	}
 
 }

@@ -2,6 +2,7 @@ package beer.gpio.controller;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -9,10 +10,12 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import beer.gpio.device.PowerSwitch;
 import beer.gpio.device.PowerSwitch.State;
@@ -20,104 +23,127 @@ import beer.gpio.device.TemperatureSensor;
 import beer.gpio.exception.PowerSwitchException;
 import beer.gpio.exception.TemperatureSensorException;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BeerControllerTest {
 	
+	private static final int SLEEP_INTERVAL_MILLIS = 10;
+	private static final float TOLERANCE = 0.5f;
+	private static final int MAX_RETRIES = 10;
+	private static final float BASE_TEMP = 18f;
+
 	@Mock
 	private PowerSwitch powerSwitch;
 	
 	@Mock
 	private TemperatureSensor tempSensor;
 	
+	@Mock
+	private Configuration config;
+	
+	@InjectMocks
 	private BeerController beerController;
 	
 	@Before
-	public void before() {
-		MockitoAnnotations.initMocks(this);
-		
-		beerController = new BeerController(powerSwitch, tempSensor);
+	public void setUp() {
+		doReturn(BASE_TEMP).when(config).getBaseTemperature();
+		doReturn(SLEEP_INTERVAL_MILLIS).when(config).getSleepInterval();
+		doReturn(MAX_RETRIES).when(config).getMaxRetries();
+		doReturn(TOLERANCE).when(config).getTolerance();
 	}
-
+	
 	@Test
-	public void testTempHigh() throws TemperatureSensorException, PowerSwitchException, InterruptedException {		
-		when(tempSensor.readTemperature()).thenReturn(20f);
+	public void testTempHigh() throws Exception {		
+		// Arrange
+		doReturn(20f).when(tempSensor).readTemperature();
 		
-		beerController.setSleepInterval(10);
+		// Act
 		runBeerControllerForSpecifiedPeriodThenShutdown(5);
 		
+		// Assert
 		verify(powerSwitch).setValue(State.OFF);
 	}
 	
 	@Test
-	public void testTempLow() throws TemperatureSensorException, PowerSwitchException, InterruptedException { 
+	public void testTempLow() throws Exception {
+		// Arrange
 		when(tempSensor.readTemperature()).thenReturn(16f);
 		
-		beerController.setSleepInterval(10);
+		// Act
 		runBeerControllerForSpecifiedPeriodThenShutdown(5);
 		
+		// Assert
 		verify(powerSwitch).setValue(State.ON);
 	}
 	
 	@Test
-	public void testTempHighThenLow() throws TemperatureSensorException, PowerSwitchException, InterruptedException {
+	public void testTempHighThenLow() throws Exception {
+		// Arrange
 		when(tempSensor.readTemperature()).thenReturn(20f, 16f);
-		
-		beerController.setSleepInterval(10);
+
+		// Act
 		runBeerControllerForSpecifiedPeriodThenShutdown(20);
 		
+		// Assert
 		InOrder inOrder = Mockito.inOrder(powerSwitch);
 		inOrder.verify(powerSwitch).setValue(State.OFF);
 		inOrder.verify(powerSwitch).setValue(State.ON);
 	}
 	
 	@Test
-	public void testMaxRetries() throws TemperatureSensorException, InterruptedException, PowerSwitchException {
+	public void testMaxRetries() throws Exception {
+		// Arrange
 		when(tempSensor.readTemperature()).thenThrow(new TemperatureSensorException("Error"));
-		
-		beerController.setSleepInterval(10);
+
+		// Act
 		Thread t = new Thread(beerController);
 		t.start();
 		t.join();
 		
-		int maxRetries = beerController.getMaxRetries();
-		verify(powerSwitch, times(maxRetries)).setValue(State.OFF);
+		// Assert
+		verify(powerSwitch, times(MAX_RETRIES)).setValue(State.OFF);
 	}
 	
 	@Test
-	public void testMaxRetriesWithFailingPowerSwitch() throws TemperatureSensorException, InterruptedException, PowerSwitchException {
+	public void testMaxRetriesWithFailingPowerSwitch() throws Exception {
+		// Arrange
 		when(tempSensor.readTemperature()).thenThrow(new TemperatureSensorException("Error"));
 		doThrow(new PowerSwitchException("Error")).when(powerSwitch).setValue((State) any());
 		
-		beerController.setSleepInterval(10);
+		// Act
 		Thread t = new Thread(beerController);
 		t.start();
 		t.join();
 		
-		int maxRetries = beerController.getMaxRetries();
-		verify(powerSwitch, times(maxRetries)).setValue(State.OFF);
+		// Assert
+		verify(powerSwitch, times(MAX_RETRIES)).setValue(State.OFF);
 	}
 	
 	@Test
-	public void testOneRetry() throws TemperatureSensorException, InterruptedException, PowerSwitchException {
+	public void testOneRetry() throws Exception {
+		// Arrange
 		when(tempSensor.readTemperature()).thenThrow(new TemperatureSensorException("Error")).thenReturn(16f);
 		
-		beerController.setSleepInterval(10);
+		// Act
 		runBeerControllerForSpecifiedPeriodThenShutdown(15);
 		
+		// Assert
 		InOrder inOrder = Mockito.inOrder(powerSwitch);
 		inOrder.verify(powerSwitch).setValue(State.OFF);
 		inOrder.verify(powerSwitch).setValue(State.ON);
 	}
 	
 	@Test
-	public void testOneRetryThenPowerSwitchFailure() throws TemperatureSensorException, InterruptedException, PowerSwitchException {
+	public void testOneRetryThenPowerSwitchFailure() throws Exception {
+		// Arrange
 		when(tempSensor.readTemperature()).thenThrow(new TemperatureSensorException("Error")).thenReturn(16f);
 		doNothing().doThrow(new PowerSwitchException("Error")).when(powerSwitch).setValue((State) any());
 		
-		beerController.setSleepInterval(10);
+		// Act
 		Thread t = new Thread(beerController);
 		t.start();
 		t.join();
 		
+		// Assert
 		InOrder inOrder = Mockito.inOrder(powerSwitch);
 		inOrder.verify(powerSwitch).setValue(State.OFF);
 		inOrder.verify(powerSwitch).setValue(State.ON);

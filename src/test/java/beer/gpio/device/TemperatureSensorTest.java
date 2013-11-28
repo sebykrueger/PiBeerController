@@ -1,6 +1,7 @@
 package beer.gpio.device;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -90,13 +91,35 @@ public class TemperatureSensorTest {
 	}
 	
 	@Test
-	public void testGetLastReading() throws TemperatureSensorException {
+	public void testGetLastReading1() throws TemperatureSensorException {
 		String fixture = "26 01 4b 46 7f ff 0a 10 5c : crc=5c YES\n" + 
 				 "26 01 4b 46 7f ff 0a 10 5c t=18375";
 		StringReader reader = new StringReader(fixture);
 		TemperatureSensorForUnitTest sensor = new TemperatureSensorForUnitTest();
 		sensor.readTemperature(reader);
 		assertEquals(new Float(18.375), sensor.getLastReading());	
+	}
+	
+	@Test
+	public void testGetLastReading2() throws TemperatureSensorException {
+		String fixture1 = "26 01 4b 46 7f ff 0a 10 5c : crc=5c YES\n" + 
+				  "26 01 4b 46 7f ff 0a 10 5c t=18375";
+		StringReader reader = new StringReader(fixture1);
+		TemperatureSensorForUnitTest sensor = new TemperatureSensorForUnitTest();
+		sensor.readTemperature(reader);
+		
+		String fixture2 = "26 01 4b 46 7f ff 0a 10 5c : crc=5c YES\n" + 
+				  "26 01 4b 46 7f ff 0a 10 5c t=19123";
+		reader = new StringReader(fixture2);
+		sensor.readTemperature(reader);
+		
+		assertEquals(new Float(19.123), sensor.getLastReading());
+	}
+	
+	@Test
+	public void testGetLastReading_NaN() throws TemperatureSensorException {
+		Float result = new TemperatureSensorForUnitTest().getLastReading();
+		assertTrue(result.isNaN());
 	}
 	
 	@Test(expected=TemperatureSensorException.class)

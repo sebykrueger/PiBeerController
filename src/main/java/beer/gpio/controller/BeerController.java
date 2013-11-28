@@ -10,67 +10,57 @@ import beer.gpio.exception.TemperatureSensorException;
 
 public class BeerController implements Runnable {
 	
-	private int sleepInterval = 60000;	
-	private float baseTemperature = 18;
-	private float tolerance = 0.5f;
-	private int maxRetries = 10;
+	public static final String KEY = "BeerController";
+	private static final Logger LOG = Logger.getLogger(BeerController.class.getName());
 	
 	private boolean running = true;
 	
 	private PowerSwitch powerSwitch;
 	private TemperatureSensor tempSensor;
+	private Configuration config;
 
-	private static Logger log = Logger.getLogger(BeerController.class.getName());
-	
-	private static BeerController instance;
-	
-	public static BeerController getInstance() {
-		return instance;
-	}
-	
-	public BeerController(PowerSwitch powerSwitch, TemperatureSensor tempSensor) {
+	public BeerController(final PowerSwitch powerSwitch, final TemperatureSensor tempSensor, final Configuration config) {
 		this.powerSwitch = powerSwitch;
 		this.tempSensor = tempSensor;
+		this.config = config;
 	}
-	
+
 	@Override
 	public void run() {
-		instance = this;
-		
 		int retries = 1;
 		while (running) { 
 			try {
 				Float temp = tempSensor.readTemperature();
 			
 				if (tooLow(temp)) {
-					log.info("Temperature too low: " + temp + ". Setting PowerSwitch to ON.");
+					LOG.info("Temperature too low: " + temp + ". Setting PowerSwitch to ON.");
 					powerSwitch.setValue(State.ON);
 				} else if (tooHigh(temp)) {
-					log.info("Temperature too high: " + temp + ". Setting PowerSwitch to OFF.");
+					LOG.info("Temperature too high: " + temp + ". Setting PowerSwitch to OFF.");
 					powerSwitch.setValue(State.OFF);
 				}			
 			} catch (TemperatureSensorException ex) {
 				ex.printStackTrace();
 				attemptPowerSwitchOff();
-				if (++retries > maxRetries) {
+				if (++retries > config.getMaxRetries()) {
 					shutdown();
 				} else {
-					log.severe("Try " + retries + " of " + maxRetries);
+					LOG.severe("Try " + retries + " of " + config.getMaxRetries());
 				}
 			} catch (PowerSwitchException ex) {
 				ex.printStackTrace();
 				shutdown();
 			}
-			pause(sleepInterval);
+			pause(config.getSleepInterval());
 		}
 	}
 
 	private boolean tooLow(Float temp) {
-		return temp < baseTemperature;
+		return temp < config.getBaseTemperature();
 	}
 
 	private boolean tooHigh(Float temp) {
-		return temp > (baseTemperature + tolerance);
+		return temp > (config.getBaseTemperature() + config.getTolerance());
 	}
 	
 	private void pause(int i) {
@@ -82,7 +72,7 @@ public class BeerController implements Runnable {
 	}
 	
 	public void shutdown() {
-		log.info("BeerController stopping...");
+		LOG.info("BeerController stopping...");
 		running = false;
 	}
 	
@@ -91,7 +81,7 @@ public class BeerController implements Runnable {
 			powerSwitch.setValue(State.OFF);
 		} catch (PowerSwitchException ex) {
 			ex.printStackTrace();
-			log.severe("Failure setting PowerSwitch to OFF");
+			LOG.severe("Failure setting PowerSwitch to OFF");
 		}
 	}
 
@@ -104,35 +94,4 @@ public class BeerController implements Runnable {
 		return tempSensor;
 	}
 
-	public int getSleepInterval() {
-		return sleepInterval;
-	}
-
-	public void setSleepInterval(int sleepInterval) {
-		this.sleepInterval = sleepInterval;
-	}
-
-	public float getBaseTemperature() {
-		return baseTemperature;
-	}
-
-	public void setBaseTemperature(float baseTemperature) {
-		this.baseTemperature = baseTemperature;
-	}
-
-	public float getTolerance() {
-		return tolerance;
-	}
-
-	public void setTolerance(float tolerance) {
-		this.tolerance = tolerance;
-	}
-	
-	public int getMaxRetries() {
-		return maxRetries;
-	}
-	
-	public void setMaxRetries(int maxRetries) {
-		this.maxRetries = maxRetries;
-	}
 }

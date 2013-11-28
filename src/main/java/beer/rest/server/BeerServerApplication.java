@@ -1,11 +1,16 @@
 package beer.rest.server;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
 public class BeerServerApplication extends Application {
 	
+	public BeerServerApplication(final Context ctx) {
+		super(ctx);
+	}
+
 	@Override
 	public Restlet createInboundRoot() {
 	    Router router = new Router(getContext());

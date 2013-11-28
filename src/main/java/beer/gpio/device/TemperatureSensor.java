@@ -164,7 +164,7 @@ public class TemperatureSensor {
 	}
 	
 	public Float getLastReading() {
-		return newReading;
+		return newReading == null ? Float.NaN : newReading;
 	}
 	
 	public FilePaths getFilePaths() {

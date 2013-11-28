@@ -13,6 +13,8 @@ import beer.gpio.exception.TemperatureSensorException;
 import beer.gpio.util.FilePaths;
 
 public class TemperatureSensor {
+	
+	public static final String KEY = "TemperatureSensor";
 
 	private Float newReading = null;
 	private Float oldReading = null;

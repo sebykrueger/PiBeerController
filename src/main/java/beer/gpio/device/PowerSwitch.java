@@ -10,6 +10,8 @@ import beer.gpio.util.FilePaths;
 
 public class PowerSwitch {
 	
+	public static final String KEY = "PowerSwitch";
+	
 	protected final int pinNumber;
 	protected State state = State.UNKNOWN;
 	private FilePaths filePaths = new FilePaths();

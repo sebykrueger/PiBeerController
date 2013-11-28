@@ -18,7 +18,7 @@ public class Main {
 		System.out.println(" / /_/ /  __/  __/ /     / /___/ /_/ / / / / /_/ /  / /_/ / / /  __/ /    ");
 		System.out.println("/_____/\\___/\\___/_/      \\____/\\____/_/ /_/\\__/_/   \\____/_/_/\\___/_/     ");
 		System.out.println();
-		System.out.println("Copyright \u00a9 Sebastian Krueger, November 2013.");
+		System.out.println("Copyleft \u00a9 Sebastian Krueger, November 2013.");
 		System.out.println(); 
 		                                                           
 		log.info("BeerController starting GPIO...");

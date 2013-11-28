@@ -6,12 +6,6 @@ import org.restlet.resource.ResourceException;
 
 public class BeerControllerServerResource extends AbstractServerResource {
 	
-	/**
-	 * one of:
-	 * 	- sleepinterval
-	 * 	- basetemp
-	 * 	- tolerance
-	 */
 	private String attribute;
 	
 	@Override

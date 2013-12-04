@@ -32,7 +32,7 @@ public class BeerControllerServerResourceTest {
 	@Mock
 	private Configuration config;
 	
-	private BeerControllerServerResource sot;
+	private BeerControllerServerResource sut;
 	
 	private Map<String, Object> requestAttributes;
 	private Request request;
@@ -48,7 +48,7 @@ public class BeerControllerServerResourceTest {
 		
 		requestAttributes = new HashMap<String, Object>();
 		
-		sot = new BeerControllerServerResource();
+		sut = new BeerControllerServerResource();
 		
 		context = new Context();
 		context.getAttributes().put(Configuration.KEY, config);
@@ -64,8 +64,8 @@ public class BeerControllerServerResourceTest {
 		request.setAttributes(requestAttributes);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
@@ -82,8 +82,8 @@ public class BeerControllerServerResourceTest {
 		request.setAttributes(requestAttributes);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
@@ -100,8 +100,8 @@ public class BeerControllerServerResourceTest {
 		request.setAttributes(requestAttributes);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
@@ -118,8 +118,8 @@ public class BeerControllerServerResourceTest {
 		request.setAttributes(requestAttributes);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertEquals(response.getStatus().getCode(), 404);
@@ -137,8 +137,8 @@ public class BeerControllerServerResourceTest {
 		request.setEntity("20", MediaType.TEXT_PLAIN);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
@@ -156,8 +156,8 @@ public class BeerControllerServerResourceTest {
 		request.setEntity("20", MediaType.TEXT_PLAIN);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
@@ -175,8 +175,8 @@ public class BeerControllerServerResourceTest {
 		request.setEntity("20", MediaType.TEXT_PLAIN);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
@@ -193,8 +193,8 @@ public class BeerControllerServerResourceTest {
 		request.setAttributes(requestAttributes);
 		
 		// Act
-		sot.init(context, request, response);
-		sot.handle();
+		sut.init(context, request, response);
+		sut.handle();
 		
 		// Assert
 		assertEquals(response.getStatus().getCode(), 404);

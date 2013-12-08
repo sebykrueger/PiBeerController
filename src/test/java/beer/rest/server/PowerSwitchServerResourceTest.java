@@ -41,7 +41,7 @@ public class PowerSwitchServerResourceTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		assertEquals("ON", response.getEntityAsText());
+		assertEquals("{\"PowerSwitch.status\":\"ON\"}", response.getEntityAsText());
 	}
 	
 }

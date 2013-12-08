@@ -2,10 +2,14 @@ package beer.rest.server;
 
 import java.util.logging.Logger;
 
+import org.json.simple.JSONObject;
 import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
+
+import beer.gpio.controller.BeerController;
 
 public class BeerControllerServerResource extends AbstractServerResource {
 	
@@ -18,22 +22,29 @@ public class BeerControllerServerResource extends AbstractServerResource {
 		attribute = getAttribute("attribute");
 	}
 
-	@Get("txt")
-	public String representation() {
+	@SuppressWarnings("unchecked")
+	@Get
+	public JsonRepresentation representation() {
+		final String JSON_VALUE = BeerController.KEY + "." + attribute;
+		JSONObject jsonObj = new JSONObject();
+		
 		switch (attribute) {
 		case "sleepinterval":
-			return getConfig().getSleepInterval().toString();
+			jsonObj.put(JSON_VALUE, getConfig().getSleepInterval().toString());
+			return new JsonRepresentation(jsonObj);
 			
 		case "basetemp":
-			return getConfig().getBaseTemperature().toString();
+			jsonObj.put(JSON_VALUE, getConfig().getBaseTemperature().toString());
+			return new JsonRepresentation(jsonObj);
 			
 		case "tolerance":
-			return getConfig().getTolerance().toString();
+			jsonObj.put(JSON_VALUE, getConfig().getTolerance().toString());
+			return new JsonRepresentation(jsonObj);
 
 		default:
 			LOG.severe("Attribute (" + attribute + ") does not exist");
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Attribute (" + attribute + ") does not exist");
-			return "";
+			return new JsonRepresentation(new JSONObject());
 		}
 	}
 	

@@ -2,6 +2,7 @@ package beer.rest.server;
 
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 import beer.gpio.controller.BeerController;
@@ -19,7 +20,8 @@ public class BeerServerComponent extends Component {
 		setOwner("Krueger Brewing Corp");
 		setAuthor("Sebastian Krueger");
 
-		getServers().add(Protocol.HTTP, 8111);
+		Server server = getServers().add(Protocol.HTTP, 8111);
+		server.getContext().getParameters().set("tracing", "true");
 		
 		final Context childContext = getContext().createChildContext();
 		childContext.getAttributes().put(PowerSwitch.KEY, powerSwitch);

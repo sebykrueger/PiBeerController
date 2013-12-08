@@ -1,11 +1,21 @@
 package beer.rest.server;
 
+import org.json.simple.JSONObject;
+import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Get;
 
-public class PowerSwitchServerResource extends AbstractServerResource {
+import beer.gpio.device.PowerSwitch;
 
-	@Get ("txt")
-	public String getState() {
-		return getPowerSwitch().getPinState().name();
+public class PowerSwitchServerResource extends AbstractServerResource {
+	
+	private static final String JSON_VALUE = PowerSwitch.KEY + ".status"; 
+
+	@SuppressWarnings("unchecked")
+	@Get
+	public JsonRepresentation getState() {
+		final JSONObject jsonObj = new JSONObject();
+		jsonObj.put(JSON_VALUE, getPowerSwitch().getPinState().name());
+		
+		return new JsonRepresentation(jsonObj);
 	}
 }

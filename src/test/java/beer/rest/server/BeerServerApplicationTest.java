@@ -69,7 +69,7 @@ public class BeerServerApplicationTest {
 		sut.handle(request, response);
 		
 		// Assert
-		assertEquals("17.25", response.getEntityAsText());
+		assertEquals("{\"TemperatureSensor.temperature\":\"17.25\"}", response.getEntityAsText());
 		assertTrue(response.getStatus().isSuccess());
 	}
 	
@@ -85,7 +85,7 @@ public class BeerServerApplicationTest {
 		sut.handle(request, response);
 		
 		// Assert
-		assertEquals("OFF", response.getEntityAsText());
+		assertEquals("{\"PowerSwitch.status\":\"OFF\"}", response.getEntityAsText());
 		assertTrue(response.getStatus().isSuccess());
 	}
 	
@@ -101,7 +101,7 @@ public class BeerServerApplicationTest {
 		sut.handle(request, response);
 		
 		// Assert
-		assertEquals("35", response.getEntityAsText());
+		assertEquals("{\"BeerController.sleepinterval\":\"35\"}", response.getEntityAsText());
 		assertTrue(response.getStatus().isSuccess());
 	}
 	
@@ -132,7 +132,7 @@ public class BeerServerApplicationTest {
 		sut.handle(request, response);
 		
 		// Assert
-		assertEquals("25.0", response.getEntityAsText());
+		assertEquals("{\"BeerController.basetemp\":\"25.0\"}", response.getEntityAsText());
 		assertTrue(response.getStatus().isSuccess());
 	}
 	
@@ -163,7 +163,7 @@ public class BeerServerApplicationTest {
 		sut.handle(request, response);
 		
 		// Assert
-		assertEquals("26.0", response.getEntityAsText());
+		assertEquals("{\"BeerController.tolerance\":\"26.0\"}", response.getEntityAsText());
 		assertTrue(response.getStatus().isSuccess());
 	}
 	

@@ -62,7 +62,7 @@ public class BeerServerComponentTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		assertEquals("17.5", response.getEntityAsText());
+		assertEquals("{\"TemperatureSensor.temperature\":\"17.5\"}", response.getEntityAsText());
 	}
 	
 	@Test
@@ -78,7 +78,7 @@ public class BeerServerComponentTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		assertEquals("OFF", response.getEntityAsText());
+		assertEquals("{\"PowerSwitch.status\":\"OFF\"}", response.getEntityAsText());
 	}
 	
 	// TODO: More tests to come based on BeerServerApplicationTest.java

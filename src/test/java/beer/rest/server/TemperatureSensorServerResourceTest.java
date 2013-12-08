@@ -41,6 +41,6 @@ public class TemperatureSensorServerResourceTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		assertEquals("20.0", response.getEntityAsText());
+		assertEquals("{\"TemperatureSensor.temperature\":\"20.0\"}", response.getEntityAsText());
 	}
 }

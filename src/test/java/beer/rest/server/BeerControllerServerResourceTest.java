@@ -69,7 +69,7 @@ public class BeerControllerServerResourceTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		assertEquals(response.getEntityAsText(), SLEEP_INTERVAL_MILLIS + "");
+		assertEquals("{\"BeerController.sleepinterval\":\"" + SLEEP_INTERVAL_MILLIS + "\"}", response.getEntityAsText());
 	}
 	
 	@Test
@@ -87,7 +87,7 @@ public class BeerControllerServerResourceTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		assertEquals(response.getEntityAsText(), BASE_TEMP + "");				
+		assertEquals("{\"BeerController.basetemp\":\"" + BASE_TEMP + "\"}", response.getEntityAsText());			
 	}
 	
 	@Test
@@ -105,7 +105,7 @@ public class BeerControllerServerResourceTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		assertEquals(response.getEntityAsText(), TOLERANCE + "");			
+		assertEquals("{\"BeerController.tolerance\":\"" + TOLERANCE + "\"}", response.getEntityAsText());		
 	}
 	
 	@Test

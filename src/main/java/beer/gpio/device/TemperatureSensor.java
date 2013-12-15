@@ -121,7 +121,7 @@ public class TemperatureSensor {
 		
 		if (!crcValid || !tempValid) {
 			log.severe("Exception: Invalid Input. CRC Valid (" + crcValid + "), Temp Valid (" + tempValid + ")");
-			throw new TemperatureSensorException("Either CRC of Temp are invalid"); 
+			throw new TemperatureSensorException("Either CRC or Temp are invalid"); 
 		}
 	}
 

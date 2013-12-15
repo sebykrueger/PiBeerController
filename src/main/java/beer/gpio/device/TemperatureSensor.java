@@ -120,8 +120,8 @@ public class TemperatureSensor {
 		boolean tempValid = tempLine.matches(regexTemp);
 		
 		if (!crcValid || !tempValid) {
-			log.severe("Exception: Invalid Input");
-			throw new TemperatureSensorException("Invalid Input"); 
+			log.severe("Exception: Invalid Input. CRC Valid (" + crcValid + "), Temp Valid (" + tempValid + ")");
+			throw new TemperatureSensorException("Either CRC of Temp are invalid"); 
 		}
 	}
 

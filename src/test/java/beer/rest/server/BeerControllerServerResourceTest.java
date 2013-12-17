@@ -53,24 +53,6 @@ public class BeerControllerServerResourceTest {
 		context = new Context();
 		context.getAttributes().put(Configuration.KEY, config);
 	}
-
-	@Test
-	public void testGetSleepInterval() {
-		// Arrange
-		request = new Request(Method.GET, "/");
-		response = new Response(request);
-		
-		requestAttributes.put("attribute", "sleepinterval");
-		request.setAttributes(requestAttributes);
-		
-		// Act
-		sut.init(context, request, response);
-		sut.handle();
-		
-		// Assert
-		assertTrue(response.getStatus().isSuccess());
-		assertEquals("{\"BeerController.sleepinterval\":\"" + SLEEP_INTERVAL_MILLIS + "\"}", response.getEntityAsText());
-	}
 	
 	@Test
 	public void testGetBaseTemp() {
@@ -127,7 +109,44 @@ public class BeerControllerServerResourceTest {
 	}
 	
 	@Test
+	public void testGetSleepInterval() {
+		// Arrange
+		request = new Request(Method.GET, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "sleepinterval");
+		request.setAttributes(requestAttributes);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isSuccess());
+		assertEquals("{\"BeerController.sleepinterval\":\"" + SLEEP_INTERVAL_MILLIS + "\"}", response.getEntityAsText());
+	}
+	
+	@Test
 	public void testPutSleepInterval() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "sleepinterval");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.sleepinterval\":\"" + SLEEP_INTERVAL_MILLIS + "\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isSuccess());
+		verify(config).setSleepInterval(SLEEP_INTERVAL_MILLIS);
+	}
+	
+	@Test
+	public void testPutSleepInterval_Fail_NotJSON() {
 		// Arrange
 		request = new Request(Method.PUT, "/");
 		response = new Response(request);
@@ -141,8 +160,61 @@ public class BeerControllerServerResourceTest {
 		sut.handle();
 		
 		// Assert
-		assertTrue(response.getStatus().isSuccess());
-		verify(config).setSleepInterval(20);
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutSleepInterval_Fail_NotInteger() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "sleepinterval");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.sleepinterval\":\"" + SLEEP_INTERVAL_MILLIS + ".0\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutSleepInterval_Fail_InvalidJSON() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "sleepinterval");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.sleepinterval\":\"" + SLEEP_INTERVAL_MILLIS, MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutSleepInterval_Fail_InvalidJSONKey() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "sleepinterval");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.doesnotexist\":\"" + SLEEP_INTERVAL_MILLIS + "\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
 	}
 	
 	@Test
@@ -153,7 +225,7 @@ public class BeerControllerServerResourceTest {
 		
 		requestAttributes.put("attribute", "basetemp");
 		request.setAttributes(requestAttributes);
-		request.setEntity("20", MediaType.TEXT_PLAIN);
+		request.setEntity("{\"BeerController.basetemp\":\"" + BASE_TEMP + "\"}", MediaType.TEXT_PLAIN);
 		
 		// Act
 		sut.init(context, request, response);
@@ -161,7 +233,43 @@ public class BeerControllerServerResourceTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		verify(config).setBaseTemperature(20f);		
+		verify(config).setBaseTemperature(BASE_TEMP);		
+	}
+	
+	@Test
+	public void testPutBaseTemp_Fail_NotFloat() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "basetemp");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.basetemp\":\"" + BASE_TEMP + "x\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutBaseTemp_Fail_InvalidJSONKey() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "basetemp");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.doesnotexist\":\"" + BASE_TEMP + "\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
 	}
 	
 	@Test
@@ -172,7 +280,7 @@ public class BeerControllerServerResourceTest {
 		
 		requestAttributes.put("attribute", "tolerance");
 		request.setAttributes(requestAttributes);
-		request.setEntity("20", MediaType.TEXT_PLAIN);
+		request.setEntity("{\"BeerController.tolerance\":\"" + TOLERANCE + "\"}", MediaType.TEXT_PLAIN);
 		
 		// Act
 		sut.init(context, request, response);
@@ -180,7 +288,43 @@ public class BeerControllerServerResourceTest {
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
-		verify(config).setTolerance(20f);		
+		verify(config).setTolerance(TOLERANCE);		
+	}
+	
+	@Test
+	public void testPutTolerance_Fail_NotFloat() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "tolerance");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.tolerance\":\"" + TOLERANCE + "x\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutTolerance_Fail_InvalidJSONKey() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "tolerance");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.doesnotexist\":\"" + TOLERANCE + "\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
 	}
 	
 	@Test
@@ -191,6 +335,7 @@ public class BeerControllerServerResourceTest {
 		
 		requestAttributes.put("attribute", "doesnotexist");
 		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.tolerance\":\"" + TOLERANCE + "\"}", MediaType.TEXT_PLAIN);
 		
 		// Act
 		sut.init(context, request, response);

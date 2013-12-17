@@ -15,9 +15,9 @@ import org.restlet.resource.ResourceException;
 
 import beer.gpio.controller.BeerController;
 
-public class BeerControllerServerResource extends AbstractServerResource {
+public class BeerControllerConfigurationServerResource extends AbstractServerResource {
 
-	private static final Logger LOG = Logger.getLogger(BeerControllerServerResource.class.getName());
+	private static final Logger LOG = Logger.getLogger(BeerControllerConfigurationServerResource.class.getName());
 	
 	private	JSONObject jsonObj;
 	private String input;
@@ -59,9 +59,12 @@ public class BeerControllerServerResource extends AbstractServerResource {
 			jsonObj.put(JSON_VALUE, getConfig().getTolerance().toString());
 			return new JsonRepresentation(jsonObj);
 
+		case "maxretries":
+			jsonObj.put(JSON_VALUE, getConfig().getMaxRetries().toString());
+			return new JsonRepresentation(jsonObj);
+			
 		default:
-			LOG.severe("Attribute (" + attribute + ") does not exist");
-			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Attribute (" + attribute + ") does not exist");
+			setClientError("Attribute (" + attribute + ") does not exist");
 			return new JsonRepresentation(new JSONObject());
 		}
 	}
@@ -86,6 +89,10 @@ public class BeerControllerServerResource extends AbstractServerResource {
 			setTolerance();
 			break;
 
+		case "maxretries":
+			setMaxRetries();
+			break;
+			
 		default:
 			setClientError("Attribute (" + attribute + ") does not exist");
 		}
@@ -121,6 +128,17 @@ public class BeerControllerServerResource extends AbstractServerResource {
 			getConfig().setTolerance(Float.parseFloat(value));
 		} catch (NumberFormatException ex) {
 			setClientError("Invalid Input: " + input + " does not contain a valid Float.");
+		}
+	}
+	
+	private void setMaxRetries() {
+		final String value = validateJSONInput("BeerController.maxretries");
+		if (value == null) return;
+		
+		try {
+			getConfig().setMaxRetries(Integer.parseInt(value));
+		} catch (NumberFormatException ex) {
+			setClientError("Invalid Input: " + input + " does not contain a valid Integer.");
 		}
 	}
 

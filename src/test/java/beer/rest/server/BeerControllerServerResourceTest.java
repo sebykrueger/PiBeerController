@@ -32,7 +32,7 @@ public class BeerControllerServerResourceTest {
 	@Mock
 	private Configuration config;
 	
-	private BeerControllerServerResource sut;
+	private BeerControllerConfigurationServerResource sut;
 	
 	private Map<String, Object> requestAttributes;
 	private Request request;
@@ -48,7 +48,7 @@ public class BeerControllerServerResourceTest {
 		
 		requestAttributes = new HashMap<String, Object>();
 		
-		sut = new BeerControllerServerResource();
+		sut = new BeerControllerConfigurationServerResource();
 		
 		context = new Context();
 		context.getAttributes().put(Configuration.KEY, config);
@@ -88,6 +88,24 @@ public class BeerControllerServerResourceTest {
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
 		assertEquals("{\"BeerController.tolerance\":\"" + TOLERANCE + "\"}", response.getEntityAsText());		
+	}
+	
+	@Test
+	public void testGetMaxRetries() {
+		// Arrange
+		request = new Request(Method.GET, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "maxretries");
+		request.setAttributes(requestAttributes);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isSuccess());
+		assertEquals("{\"BeerController.maxretries\":\"" + MAX_RETRIES + "\"}", response.getEntityAsText());		
 	}
 	
 	@Test
@@ -318,6 +336,61 @@ public class BeerControllerServerResourceTest {
 		requestAttributes.put("attribute", "tolerance");
 		request.setAttributes(requestAttributes);
 		request.setEntity("{\"BeerController.doesnotexist\":\"" + TOLERANCE + "\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutMaxRetries() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "maxretries");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.maxretries\":\"" + MAX_RETRIES + "\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isSuccess());
+		verify(config).setMaxRetries(MAX_RETRIES);		
+	}
+	
+	@Test
+	public void testPutMaxRetries_Fail_NotInteger() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "maxretries");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.maxretries\":\"" + MAX_RETRIES + "x\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutMaxRetries_Fail_InvalidJSONKey() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "maxretries");
+		request.setAttributes(requestAttributes);
+		request.setEntity("{\"BeerController.doesnotexist\":\"" + MAX_RETRIES + "\"}", MediaType.TEXT_PLAIN);
 		
 		// Act
 		sut.init(context, request, response);

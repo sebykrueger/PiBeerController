@@ -64,7 +64,6 @@ public class PowerSwitch {
 	protected void writeFile(String fileName, String value) throws PowerSwitchException {
 		log.fine("writeFile: " + fileName + ", " + value); 
 		try {
-			// TODO: doesn't throw an exception if the file is not there!
 			FileOutputStream fos = new FileOutputStream(fileName);
 			fos.write(value.getBytes());
 			fos.close();

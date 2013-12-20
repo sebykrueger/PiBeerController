@@ -10,7 +10,7 @@ public class BeerTestCase {
 	@Rule
 	public TestRule watcher = new TestWatcher() {
 	   protected void starting(Description description) {
-	      System.out.println("Starting test: " + this.getClass().getName() + "#" + description.getMethodName());
+	      System.out.println("\n--> Starting test: " + this.getClass().getName() + "#" + description.getMethodName());
 	   }
 	};
 	

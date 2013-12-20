@@ -19,7 +19,9 @@ public class BeerServerComponent extends Component {
 		setOwner("Krueger Brewing Corp");
 		setAuthor("Sebastian Krueger");
 
-		Server server = getServers().add(Protocol.HTTPS, 8138);
+		// TODO ssl on or off should be a configuration option
+//		Server server = getServers().add(Protocol.HTTPS, 8138);
+		Server server = getServers().add(Protocol.HTTP, 8111);
 //		Series<Parameter> parameters = server.getContext().getParameters();
 //		parameters.add("keystorePath", "......");
 //		parameters.add("keystorePassword","password");
@@ -27,6 +29,7 @@ public class BeerServerComponent extends Component {
 //		parameters.add("keyPassword","password");
 		// TODO Need to configure the SSL keystores
 		
+		// TODO tracing should be a configuration option
 		server.getContext().getParameters().set("tracing", "true");
 		
 		Context childContext = getContext().createChildContext();

@@ -5,14 +5,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 
 import beer.gpio.controller.BeerController;
 import beer.gpio.controller.Configuration;
@@ -39,6 +42,13 @@ public class BeerServerComponentTest extends RestletTestCase {
 	@InjectMocks
 	private BeerServerComponent component;
 	
+	@Before
+	public void setUp() throws Exception {
+//		Engine.setLogLevel(Level.ALL);
+//		Engine.setRestletLogLevel(Level.ALL);
+		component.start();
+	}
+	
 	@After
 	public void tearDown() throws Exception {
 		component.stop();
@@ -49,11 +59,11 @@ public class BeerServerComponentTest extends RestletTestCase {
 		// Arrange
 		doReturn(17.5f).when(tempSensor).getLastReading();
 		
-		Request request = new Request(Method.GET, "http://localhost/garage/beer/fermenter/temperature");
-		Response response = new Response(request);
+		Request request = new Request(Method.GET, "https://localhost:8111/garage/beer/fermenter/temperature");
 		
 		// Act
-		component.handle(request, response);
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());
@@ -65,11 +75,11 @@ public class BeerServerComponentTest extends RestletTestCase {
 		// Arrange
 		doReturn(State.OFF).when(powerSwitch).getPinState();
 		
-		Request request = new Request(Method.GET, "http://localhost/garage/beer/heatbelt/status");
-		Response response = new Response(request);
+		Request request = new Request(Method.GET, "https://localhost:8111/garage/beer/heatbelt/status");
 		
 		// Act
-		component.handle(request, response);
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
 		
 		// Assert
 		assertTrue(response.getStatus().isSuccess());

@@ -39,13 +39,13 @@ public class BeerController implements Runnable {
 					LOG.info("Temperature too high: " + temp + ". Setting PowerSwitch to OFF.");
 					powerSwitch.setValue(State.OFF);
 				}
-				// TODO: Need to reset the retries count if there is a success. Write unit test first!
+				retries = 1;
 			} catch (TemperatureSensorException ex) {
 				attemptPowerSwitchOff();
 				if (++retries > config.getMaxRetries()) {
 					shutdown();
 				} else {
-					LOG.severe("Try " + retries + " of " + config.getMaxRetries());
+					LOG.severe("Try " + retries + " of " + config.getMaxRetries() + " failed.");
 				}
 			} catch (PowerSwitchException ex) {
 				shutdown();

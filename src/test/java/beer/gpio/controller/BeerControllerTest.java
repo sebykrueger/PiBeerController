@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import beer.BeerTestCase;
 import beer.gpio.device.PowerSwitch;
 import beer.gpio.device.PowerSwitch.State;
 import beer.gpio.device.TemperatureSensor;
@@ -24,7 +25,7 @@ import beer.gpio.exception.PowerSwitchException;
 import beer.gpio.exception.TemperatureSensorException;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BeerControllerTest {
+public class BeerControllerTest extends BeerTestCase {
 	
 	private static final int SLEEP_INTERVAL_MILLIS = 10;
 	private static final float TOLERANCE = 0.5f;
@@ -75,7 +76,7 @@ public class BeerControllerTest {
 		verify(powerSwitch).setValue(State.ON);
 	}
 	
-//	@Test
+	@Test
 	public void testTempHighThenLow() throws Exception {
 		// Arrange
 		when(tempSensor.readTemperature()).thenReturn(20f, 16f);
@@ -118,18 +119,24 @@ public class BeerControllerTest {
 		verify(powerSwitch, times(MAX_RETRIES)).setValue(State.OFF);
 	}
 	
-//	@Test
-	public void testOneRetry() throws Exception {
+	@Test
+	public void testTwoRetries() throws Exception {
 		// Arrange
-		when(tempSensor.readTemperature()).thenThrow(new TemperatureSensorException("Error")).thenReturn(16f);
+		when(tempSensor.readTemperature()).
+			thenThrow(new TemperatureSensorException("Error")).
+			thenReturn(16f).
+			thenReturn(17F).
+			thenThrow(new TemperatureSensorException("Error")).
+			thenReturn(17F);
 		
 		// Act
-		runBeerControllerForSpecifiedPeriodThenShutdown(15);
+//		runBeerControllerForSpecifiedPeriodThenShutdown(15);
+		runBeerControllerForSpecifiedPeriodThenShutdown(50);
 		
 		// Assert
 		InOrder inOrder = Mockito.inOrder(powerSwitch);
 		inOrder.verify(powerSwitch).setValue(State.OFF);
-		inOrder.verify(powerSwitch).setValue(State.ON);
+		inOrder.verify(powerSwitch, times(3)).setValue(State.ON);
 	}
 	
 	@Test

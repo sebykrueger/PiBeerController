@@ -72,30 +72,38 @@ public class BeerControllerConfigurationServerResource extends AbstractServerRes
 	@Put("txt")
 	public void store(String input) {
 		this.input = input;
-		
-		if ( ! validJSONString()) return;
-		if ( ! validJSONObject()) return;
 
 		switch (attribute) {
 		case "sleepinterval":
+			if (! validInput()) break;
 			setSleepInterval();
 			break;
 
 		case "basetemp":
+			if (! validInput()) break;
 			setBaseTemp();
 			break;
 
 		case "tolerance":
+			if (! validInput()) break;
 			setTolerance();
 			break;
 
 		case "maxretries":
+			if (! validInput()) break;
 			setMaxRetries();
 			break;
 			
 		default:
 			setClientError("Attribute (" + attribute + ") does not exist");
 		}
+	}
+
+	private boolean validInput() {
+		if ( ! validateInputNotNull()) return false;
+		if ( ! validJSONString()) return false;
+		if ( ! validJSONObject()) return false;
+		return true;
 	}
 
 	private void setSleepInterval() {
@@ -146,6 +154,15 @@ public class BeerControllerConfigurationServerResource extends AbstractServerRes
 		LOG.severe(errorMessage);
 		getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, errorMessage);
 	}
+	
+	private boolean validateInputNotNull() {
+		if (input == null) {
+			setClientError("No JSON input provided.");
+			return false;
+		}
+		return true;
+	}
+
 	
 	private boolean validJSONObject() {
 		try {

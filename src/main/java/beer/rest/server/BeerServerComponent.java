@@ -14,16 +14,22 @@ public class BeerServerComponent extends Component {
 
 	public BeerServerComponent(final PowerSwitch powerSwitch, final TemperatureSensor tempSensor,
 			final BeerController beerController, final Configuration config) {
-
 		setName("BeerController");
 		setDescription("Control the process of brewing beer.");
 		setOwner("Krueger Brewing Corp");
 		setAuthor("Sebastian Krueger");
 
-		Server server = getServers().add(Protocol.HTTP, 8111);
+		Server server = getServers().add(Protocol.HTTPS, 8138);
+//		Series<Parameter> parameters = server.getContext().getParameters();
+//		parameters.add("keystorePath", "......");
+//		parameters.add("keystorePassword","password");
+//		parameters.add("keystoreType","JKS");
+//		parameters.add("keyPassword","password");
+		// TODO Need to configure the SSL keystores
+		
 		server.getContext().getParameters().set("tracing", "true");
 		
-		final Context childContext = getContext().createChildContext();
+		Context childContext = getContext().createChildContext();
 		childContext.getAttributes().put(PowerSwitch.KEY, powerSwitch);
 		childContext.getAttributes().put(TemperatureSensor.KEY, tempSensor);
 		childContext.getAttributes().put(BeerController.KEY, beerController);

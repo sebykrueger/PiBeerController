@@ -69,7 +69,7 @@ public class BeerControllerTest {
 		when(tempSensor.readTemperature()).thenReturn(16f);
 		
 		// Act
-		runBeerControllerForSpecifiedPeriodThenShutdown(5);
+		runBeerControllerForSpecifiedPeriodThenShutdown(1);
 		
 		// Assert
 		verify(powerSwitch).setValue(State.ON);

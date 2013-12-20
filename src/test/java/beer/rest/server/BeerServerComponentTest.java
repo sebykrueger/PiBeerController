@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,11 +17,12 @@ import org.restlet.data.Method;
 import beer.gpio.controller.BeerController;
 import beer.gpio.controller.Configuration;
 import beer.gpio.device.PowerSwitch;
-import beer.gpio.device.TemperatureSensor;
 import beer.gpio.device.PowerSwitch.State;
+import beer.gpio.device.TemperatureSensor;
+import beer.rest.RestletTestCase;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BeerServerComponentTest {
+public class BeerServerComponentTest extends RestletTestCase {
 
 	@Mock
 	private PowerSwitch powerSwitch;
@@ -39,13 +39,8 @@ public class BeerServerComponentTest {
 	@InjectMocks
 	private BeerServerComponent component;
 	
-	@Before
-	public void setUp() throws Exception {
-		component.start();
-	}
-	
 	@After
-	public void pullDown() throws Exception {
+	public void tearDown() throws Exception {
 		component.stop();
 	}
 	
@@ -54,7 +49,7 @@ public class BeerServerComponentTest {
 		// Arrange
 		doReturn(17.5f).when(tempSensor).getLastReading();
 		
-		Request request = new Request(Method.GET, "http://localhost:8111/garage/beer/fermenter/temperature");
+		Request request = new Request(Method.GET, "http://localhost/garage/beer/fermenter/temperature");
 		Response response = new Response(request);
 		
 		// Act
@@ -70,7 +65,7 @@ public class BeerServerComponentTest {
 		// Arrange
 		doReturn(State.OFF).when(powerSwitch).getPinState();
 		
-		Request request = new Request(Method.GET, "http://localhost:8111/garage/beer/heatbelt/status");
+		Request request = new Request(Method.GET, "http://localhost/garage/beer/heatbelt/status");
 		Response response = new Response(request);
 		
 		// Act
@@ -80,6 +75,4 @@ public class BeerServerComponentTest {
 		assertTrue(response.getStatus().isSuccess());
 		assertEquals("{\"PowerSwitch.status\":\"OFF\"}", response.getEntityAsText());
 	}
-	
-	// TODO: More tests to come based on BeerServerApplicationTest.java
 }

@@ -30,7 +30,7 @@ public class TemperatureSensorTest {
 	private File tempSensorDir;
 	
 	@Before
-	public void setup() {
+	public void setup() throws IOException {
 		busDir = tempFolder.newFolder("bus");
 		tempSensorDir = tempFolder.newFolder("bus/28-000004e55923");
 	}
@@ -65,7 +65,7 @@ public class TemperatureSensorTest {
 		try {
 			new TemperatureSensorForUnitTest().readTemperature(reader);
 		} catch (TemperatureSensorException ex) {
-			assertEquals("Invalid Input", ex.getMessage());
+			assertEquals("Invalid Input. CRC Valid (true), Temp Valid (false)", ex.getMessage());
 			throw ex;
 		}
 
@@ -142,7 +142,7 @@ public class TemperatureSensorTest {
 		try {
 			new TemperatureSensorForUnitTest().readTemperature(reader);
 		} catch (TemperatureSensorException ex) {
-			assertEquals("Invalid Input", ex.getMessage());
+			assertEquals("Invalid Input. CRC Valid (true), Temp Valid (false)", ex.getMessage());
 			throw ex;
 		}
 	}
@@ -217,7 +217,7 @@ public class TemperatureSensorTest {
 	}
 	
 	@Test(expected=TemperatureSensorException.class)
-	public void testConstructorException_TwoSensors() throws TemperatureSensorException {
+	public void testConstructorException_TwoSensors() throws TemperatureSensorException, IOException {
 		// setup
 		tempSensorDir = tempFolder.newFolder("bus/28-000004e55924");
 		

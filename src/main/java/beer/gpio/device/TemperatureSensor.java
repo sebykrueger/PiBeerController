@@ -42,14 +42,16 @@ public class TemperatureSensor {
 	private void validateBusPath() throws TemperatureSensorException {
 		boolean busPathExists = new File(getFilePaths().getBusPath()).exists();
 		if (! busPathExists) {
-			log.severe("Exception: " + getFilePaths().getBusPath() + " does not exist");
-			throw new TemperatureSensorException(getFilePaths().getBusPath() + " does not exist");
+			String message = getFilePaths().getBusPath() + " does not exist";
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 		
 		boolean busPathIsDirectory = new File(getFilePaths().getBusPath()).isDirectory();
 		if (! busPathIsDirectory) {
-			log.severe("Exception: " + getFilePaths().getBusPath() + " is not a directory");
-			throw new TemperatureSensorException(getFilePaths().getBusPath() + " is not a directory");
+			String message = getFilePaths().getBusPath() + " is not a directory";
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 	}
 	
@@ -66,13 +68,15 @@ public class TemperatureSensor {
 		});
 		
 		if (sensors == null || sensors.length == 0) {
-			log.severe("Exception: No temperature sensor found");
-			throw new TemperatureSensorException("No temperature sensor found");
+			String message = "No temperature sensor found";
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 		
 		if (sensors.length > 1) {
-			log.severe("Exception: More than 1 temperature sensor found");
-			throw new TemperatureSensorException("More than 1 temperature sensor found");
+			String message = "More than 1 temperature sensor found";
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 		
 		File sensor = sensors[0];
@@ -83,8 +87,9 @@ public class TemperatureSensor {
 		try {
 			return readTemperature(new FileReader(getFilePaths().get1WireBusPath(busID)));
 		} catch (FileNotFoundException ex) {
-			log.severe("Exception:  Temperature file not found");
-			throw new TemperatureSensorException("Temperature file not found", ex);
+			String message = "Temperature file not found"; 
+			log.severe(message);
+			throw new TemperatureSensorException(message, ex);
 		}
 	}
 	
@@ -93,8 +98,9 @@ public class TemperatureSensor {
 	 */
 	Float readTemperature(Reader source) throws TemperatureSensorException {
 		if (source == null) {
-			log.severe("Exception: Source is null");
-			throw new TemperatureSensorException("Source is null");
+			String message = "Source is null";
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 		this.source = source;
 		
@@ -110,8 +116,9 @@ public class TemperatureSensor {
 
 	private void validateInput() throws TemperatureSensorException {
 		if (tempLine == null) {
-			log.severe("Exception: Invalid Input. Temperature is null.");
-			throw new TemperatureSensorException("Invalid Input. Temperature is null.");
+			String message = "Invalid Input. Temperature is null.";
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 		String regexCRC = ".. .. .. .. .. .. .. .. .. : crc=.. (YES|NO)";
 		boolean crcValid = crcLine.matches(regexCRC);
@@ -120,8 +127,9 @@ public class TemperatureSensor {
 		boolean tempValid = tempLine.matches(regexTemp);
 		
 		if (!crcValid || !tempValid) {
-			log.severe("Exception: Invalid Input. CRC Valid (" + crcValid + "), Temp Valid (" + tempValid + ")");
-			throw new TemperatureSensorException("Either CRC or Temp are invalid"); 
+			String message = "Invalid Input. CRC Valid (" + crcValid + "), Temp Valid (" + tempValid + ")"; 
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 	}
 
@@ -130,19 +138,22 @@ public class TemperatureSensor {
 			crcLine = br.readLine();  
 			tempLine = br.readLine();
 		} catch (FileNotFoundException ex) {
-			log.severe("Exception: Temperature File Not Found");
-			throw new TemperatureSensorException("Temperature File Not Found", ex);
+			String message = "Temperature File Not Found";
+			log.severe(message);
+			throw new TemperatureSensorException(message, ex);
 		} catch (IOException ex) {
-			log.severe("Exception: Unknown IO exception");
-			throw new TemperatureSensorException("Unknown IO exception", ex);
+			String message = "Unknown IO exception";
+			log.severe(message);
+			throw new TemperatureSensorException(message, ex);
 		}
 	}
 
 	private void checkCRC() throws TemperatureSensorException {
 		String crc = crcLine.split("crc=")[1].split(" ")[1];
 		if (crc.equals("NO")) {
-			log.severe("Exception:  CRC check failed");
-			throw new TemperatureSensorException("CRC check failed: " + crcLine);
+			String message = "CRC check failed: " + crcLine;
+			log.severe(message);
+			throw new TemperatureSensorException(message);
 		}
 	}
 	
@@ -157,8 +168,9 @@ public class TemperatureSensor {
 			Float delta = newReading - oldReading;
 			delta = Math.abs(delta);
 			if (delta > MAX_DELTA) {
-				log.severe("Exception: Temperature delta larger than MAX_DELTA(" + MAX_DELTA + ")");
-				throw new TemperatureSensorException("Temperature delta larger than MAX_DELTA(" + MAX_DELTA + ")");
+				String message = "Temperature delta larger than MAX_DELTA(" + MAX_DELTA + ")";
+				log.severe(message);
+				throw new TemperatureSensorException(message);
 			}	
 		}
 	}

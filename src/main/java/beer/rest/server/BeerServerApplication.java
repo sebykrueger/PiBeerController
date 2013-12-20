@@ -16,8 +16,9 @@ public class BeerServerApplication extends Application {
 	    Router router = new Router(getContext());
 	    router.attach("/garage/beer/fermenter/temperature", 	TemperatureSensorServerResource.class);
 	    router.attach("/garage/beer/heatbelt/status", 			PowerSwitchServerResource.class);
-	    router.attach("/garage/beer/controller/{attribute}", 	BeerControllerServerResource.class);
+	    router.attach("/garage/beer/controller/{attribute}", 	BeerControllerConfigurationServerResource.class);
 	    router.attach("/garage/beer/shutdown", 					EternalActionsServerResource.class);
+	    // TODO: need a command to start and stop a batch and store all temperature readings with batch name
 	    
 	    return router;
 	}

@@ -22,7 +22,7 @@ import org.restlet.data.Method;
 import beer.gpio.controller.Configuration;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BeerControllerServerResourceTest {
+public class BeerControllerConfigurationServerResourceTest {
 	
 	private static final int SLEEP_INTERVAL_MILLIS = 100;
 	private static final float TOLERANCE = 0.5f;
@@ -401,7 +401,24 @@ public class BeerControllerServerResourceTest {
 	}
 	
 	@Test
-	public void testPutError() {
+	public void testPutMaxRetries_Fail_NullEntity() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "maxretries");
+		request.setAttributes(requestAttributes);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertTrue(response.getStatus().isClientError());
+	}
+	
+	@Test
+	public void testPutError_AttributeDoesNotExist_withEntity() {
 		// Arrange
 		request = new Request(Method.PUT, "/");
 		response = new Response(request);
@@ -409,6 +426,24 @@ public class BeerControllerServerResourceTest {
 		requestAttributes.put("attribute", "doesnotexist");
 		request.setAttributes(requestAttributes);
 		request.setEntity("{\"BeerController.tolerance\":\"" + TOLERANCE + "\"}", MediaType.TEXT_PLAIN);
+		
+		// Act
+		sut.init(context, request, response);
+		sut.handle();
+		
+		// Assert
+		assertEquals(response.getStatus().getCode(), 404);
+		assertEquals(response.getStatus().getDescription(), "Attribute (doesnotexist) does not exist");
+	}
+	
+	@Test
+	public void testPutError_AttributeDoesNotExist_withNullEntity() {
+		// Arrange
+		request = new Request(Method.PUT, "/");
+		response = new Response(request);
+		
+		requestAttributes.put("attribute", "doesnotexist");
+		request.setAttributes(requestAttributes);
 		
 		// Act
 		sut.init(context, request, response);

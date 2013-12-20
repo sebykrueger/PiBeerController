@@ -6,7 +6,7 @@ public class Configuration {
 	
 	// set some defaults
 	private volatile Integer sleepInterval = 60000;
-	private volatile Float baseTemperature = 18f;
+	private volatile Float baseTemperature = 20f;
 	private volatile Float tolerance = 0.5f;
 	private volatile Integer maxRetries = 10;
 
